@@ -63,13 +63,13 @@ class Storage(StorageBase):
     class Config:
         orm_mode=True
 
-class Flips_Storage(BaseModel):
-    Flips:List[FlipsCreation]
-    Stats: TypedDict('StatsFlips',{"total_retail":int, "total_resell":int, "current_net": int, "total_quantity":int, "amount_not_listed":int, "amount_listed":int,
+class Stats(BaseModel):
+    Stats: TypedDict('Stats',{"total_retail":int, "total_resell":int, "current_net": int, "total_quantity":int, "amount_not_listed":int, "amount_listed":int,
             "amount_packed":int,"amount_shipped":int})
 
-class Shoes_Storage(BaseModel):
+class FlipsStorage(Stats):
+    Flips:List[FlipsCreation]
+
+class ShoesStorage(Stats):
     Shoes:List[ShoeCreation]
-    Stats: TypedDict('StatsShoes',{"total_retail":int, "total_resell":int, "current_net": int, "total_quantity":int, "amount_not_listed":int, "amount_listed":int,
-            "amount_packed":int,"amount_shipped":int})
 

@@ -11,7 +11,7 @@ from starlette.requests import Request
 
 router = APIRouter()
 
-@router.get('/{username}/shoestorage',response_model=schemas.Shoes_Storage, tags=['Shoe Storage'])
+@router.get('/{username}/shoestorage',response_model=schemas.ShoesStorage, tags=['Shoe Storage'])
 @limiter.limit("60/minute")
 def get_shoe_storage(
     request:Request,
@@ -71,7 +71,7 @@ def update_shoe_by_id(
     auth.check_if_currUser(currUser=currUser, username=username)
     return crud.update_shoe_item(username=username,shoe_id=shoe_id, shoe=shoe, db=db)
 
-@router.delete('/{username}/shoestorage', response_model= schemas.Shoes_Storage, tags=['Shoe Storage'])
+@router.delete('/{username}/shoestorage', response_model= schemas.ShoesStorage, tags=['Shoe Storage'])
 @limiter.limit("60/minute")
 def delete_shoe(
     request:Request,

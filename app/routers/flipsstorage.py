@@ -11,7 +11,7 @@ from starlette.requests import Request
 
 router = APIRouter()
 
-@router.get('/{username}/flipsstorage',response_model=schemas.Flips_Storage, tags=['Flips Storage'])
+@router.get('/{username}/flipsstorage',response_model=schemas.FlipsStorage, tags=['Flips Storage'])
 @limiter.limit("60/minute")
 def get_flips_storage(
     request:Request,
@@ -78,7 +78,7 @@ def update_item_by_id(
 
 
     
-@router.delete('/{username}/flipsstorage',response_model=schemas.Flips_Storage, tags=['Flips Storage'])
+@router.delete('/{username}/flipsstorage',response_model=schemas.FlipsStorage, tags=['Flips Storage'])
 @limiter.limit("60/minute")
 def delete_flip(
     request:Request,
