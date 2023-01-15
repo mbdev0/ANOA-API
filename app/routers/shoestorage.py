@@ -4,7 +4,7 @@ from auth import auth
 from schemas import schemas
 from operations import crud
 
-from typing import Union
+from typing import Union, List
 from sqlalchemy.orm import Session
 from fastapi import APIRouter, Depends
 from starlette.requests import Request
@@ -25,7 +25,7 @@ def get_shoe_storage(
     auth.check_if_currUser(currUser=currUser, username=username)
     return crud.get_shoe_storage(username=username, db=db)
 
-@router.post('/{username}/shoestorage', response_model=schemas.ShoeCreation, tags=['Shoe Storage'])
+@router.post('/{username}/shoestorage', response_model=List[schemas.ShoeCreation], tags=['Shoe Storage'])
 @limiter.limit("30/minute")
 def add_shoe(
     request:Request,
@@ -40,7 +40,7 @@ def add_shoe(
     auth.check_if_currUser(currUser=currUser, username=username)
     return crud.add_shoe_to_storage(username=username, shoe=shoe, db=db)
 
-@router.get("/{username}/shoestorage/{shoe_id}", response_model=schemas.ShoeCreation, tags=['Shoe Storage'])
+@router.get("/{username}/shoestorage/{shoe_id}", response_model= schemas.ShoeCreation, tags=['Shoe Storage'])
 @limiter.limit("60/minute")
 def get_shoe_storage_item(
     request:Request,
@@ -55,7 +55,7 @@ def get_shoe_storage_item(
     auth.check_if_currUser(currUser=currUser,username=username)
     return crud.get_shoe_item_by_id(username=username, shoe_id=shoe_id, db=db)
 
-@router.patch("/{username}/shoestorage/{shoe_id}", response_model=schemas.ShoeCreation, tags=['Shoe Storage'])
+@router.patch("/{username}/shoestorage/{shoe_id}", response_model= schemas.ShoeCreation, tags=['Shoe Storage'])
 @limiter.limit("60/minute")
 def update_shoe_by_id(
     request:Request,

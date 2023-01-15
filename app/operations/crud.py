@@ -12,10 +12,10 @@ import uuid
 def create_storage(user_email:str,db:Session) -> Storage:
     user = get_user_by_email(user_email=user_email,db=db)
     db_storage = Storage(
-    storageId = str(uuid.uuid4()),
-    shoe_storage_space=schemas.StorageBase.__fields__['shoe_storage_space'].default,
-    flips_storage_space=schemas.StorageBase.__fields__['flips_storage_space'].default,
-    userid=user.userid
+        storageId = str(uuid.uuid4()),
+        shoe_storage_space=schemas.StorageBase.__fields__['shoe_storage_space'].default,
+        flips_storage_space=schemas.StorageBase.__fields__['flips_storage_space'].default,
+        userid=user.userid
     )
     print(db_storage)
     db.add(db_storage)
@@ -46,29 +46,37 @@ def get_flips_storage(username:str, db: Session):
     return storage.flips_storage_space
 
 def add_shoe_to_storage(username:str, shoe:schemas.ShoeCreation, db:Session):
+    arr = []
     storage = get_user_storage(username=username, db=db)
-    shoe = shoe.__dict__
-    shoe["id"] = str(uuid.uuid4())
-    storage.shoe_storage_space['Shoes'].append(shoe) 
-    new_product_on_stats(storage=storage, product=shoe, shoe=True)
-    flag_modified(storage, "shoe_storage_space")
-    db.add(storage)
-    db.commit()
 
-    return shoe
+    for _ in range(shoe.quantity):
+        newShoe = shoe.__dict__.copy()
+        print(newShoe)
+        newShoe['id']= str(uuid.uuid4())
+        storage.shoe_storage_space['Shoes'].append(newShoe)
+        new_product_on_stats(storage=storage, product=newShoe, shoe=True)
+        flag_modified(storage, "shoe_storage_space")
+        db.add(storage)
+        db.commit()
+        arr.append(newShoe)
+
+    return arr
 
 def add_flips_to_storage(username:str, item:schemas.FlipsCreation, db:Session):
     storage = get_user_storage(username=username,db=db)
-    item = item.__dict__
-    item['id'] = str(uuid.uuid4())
-    storage.flips_storage_space['Flips'].append(item)
-    new_product_on_stats(storage=storage, product=item, flip=True)
-    flag_modified(storage, "flips_storage_space")
-    db.add(storage)
-    db.commit()
+    arr = []
 
+    for _ in range(item.quantity):
+        newItem = item.__dict__.copy()
+        newItem['id'] = str(uuid.uuid4())
+        storage.flips_storage_space['Flips'].append(newItem)
+        new_product_on_stats(storage=storage, product=newItem, flip=True)
+        flag_modified(storage, "flips_storage_space")
+        db.add(storage)
+        db.commit()
+        arr.append(newItem)
 
-    return item
+    return arr
 
 def get_flip_item_by_id(username:str, item_id:str, db:Session):
     storage = get_flips_storage(username=username, db=db)

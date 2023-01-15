@@ -4,7 +4,7 @@ from auth import auth
 from schemas import schemas
 from operations import crud
 
-from typing import Union
+from typing import Union, List
 from sqlalchemy.orm import Session
 from fastapi import APIRouter, Depends
 from starlette.requests import Request
@@ -28,7 +28,7 @@ def get_flips_storage(
 
 
 
-@router.post('/{username}/flipsstorage', response_model=schemas.FlipsCreation, tags=['Flips Storage'])
+@router.post('/{username}/flipsstorage', response_model=List[schemas.FlipsCreation], tags=['Flips Storage'])
 @limiter.limit("30/minute")
 def add_flip(
     request:Request,
