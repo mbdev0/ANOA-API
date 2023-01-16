@@ -28,13 +28,16 @@ class User(UserBase):
 class Flips(BaseModel):
     brand: Optional[str]
     model: Optional[str]
-    quantity: Optional[conint(gt=0)]
+    #quantity: Optional[conint(gt=0)]
     retail: Optional[confloat(gt=0)]
     status: Optional[Literal['NOT LISTED', 'LISTED', 'PACKED', 'SHIPPED']]
     resell: Optional[confloat(ge=0)]
 
 class FlipsCreation(Flips):
     id:UUID
+
+class FlipsQuantity(Flips):
+    quantity: conint(gt=0)
 
 class Shoe(Flips):
     colorway: Optional[str]
@@ -43,6 +46,9 @@ class Shoe(Flips):
 
 class ShoeCreation(Shoe):
     id:UUID
+
+class ShoeQuantity(Shoe):
+    quantity: conint(gt=0)
 
 class StorageBase(BaseModel):
     shoe_storage_space = {"Shoes":[], "Stats": {

@@ -17,7 +17,8 @@ def get_shoe_storage(
     request:Request,
     username:str,
     currUser:schemas.User = Depends(auth.current_user),
-    db: Session = Depends(interact_db)):
+    db: Session = Depends(interact_db)
+    ):
 
     if currUser.superuser:
         return crud.get_shoe_storage(username=username, db=db)
@@ -30,7 +31,7 @@ def get_shoe_storage(
 def add_shoe(
     request:Request,
     username:str,
-    shoe:schemas.Shoe,
+    shoe:schemas.ShoeQuantity,
     currUser:schemas.User = Depends(auth.current_user),
     db: Session = Depends(interact_db)):
 

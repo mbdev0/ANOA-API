@@ -33,7 +33,7 @@ def get_flips_storage(
 def add_flip(
     request:Request,
     username:str, 
-    flip:schemas.Flips,
+    flip:schemas.FlipsQuantity,
     currUser:schemas.User = Depends(auth.current_user),
     db: Session = Depends(interact_db)):
 

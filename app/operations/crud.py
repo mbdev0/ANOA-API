@@ -17,7 +17,7 @@ def create_storage(user_email:str,db:Session) -> Storage:
         flips_storage_space=schemas.StorageBase.__fields__['flips_storage_space'].default,
         userid=user.userid
     )
-    print(db_storage)
+
     db.add(db_storage)
     db.commit()
     db.refresh(db_storage)
@@ -48,10 +48,10 @@ def get_flips_storage(username:str, db: Session):
 def add_shoe_to_storage(username:str, shoe:schemas.ShoeCreation, db:Session):
     arr = []
     storage = get_user_storage(username=username, db=db)
-
-    for _ in range(shoe.quantity):
+    quantity = shoe.quantity
+    for _ in range(quantity):
         newShoe = shoe.__dict__.copy()
-        print(newShoe)
+        newShoe.pop('quantity')
         newShoe['id']= str(uuid.uuid4())
         storage.shoe_storage_space['Shoes'].append(newShoe)
         new_product_on_stats(storage=storage, product=newShoe, shoe=True)
@@ -65,9 +65,11 @@ def add_shoe_to_storage(username:str, shoe:schemas.ShoeCreation, db:Session):
 def add_flips_to_storage(username:str, item:schemas.FlipsCreation, db:Session):
     storage = get_user_storage(username=username,db=db)
     arr = []
+    quantity = item.quantity
 
-    for _ in range(item.quantity):
+    for _ in range(quantity):
         newItem = item.__dict__.copy()
+        newItem.pop('quantity')
         newItem['id'] = str(uuid.uuid4())
         storage.flips_storage_space['Flips'].append(newItem)
         new_product_on_stats(storage=storage, product=newItem, flip=True)
