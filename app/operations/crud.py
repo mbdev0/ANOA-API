@@ -79,6 +79,7 @@ def add_shoe_to_storage(username:str, shoe:schemas.ShoeCreation, db:Session):
     return arr
 
 def add_flips_to_storage(username:str, item:schemas.FlipsCreation, db:Session):
+
     storage = get_user_storage(username=username,db=db)
     arr = []
     quantity = item.quantity
@@ -97,9 +98,17 @@ def add_flips_to_storage(username:str, item:schemas.FlipsCreation, db:Session):
     return arr
 
 def add_amazon_to_storage(username:str, fba:schemas.FBAItem, db:Session):
+
+    amazon_storage = get_amazon_storage(username=username, db=db)
+    amazon_items = amazon_storage['FBA']
+    for item in amazon_items:
+        if item['asin'] == fba.asin:
+            raise HTTPException(status_code=400, detail=f'Item with ASIN: {fba.asin} already exists in your Amazon Storage')
+    
+
     storage = get_user_storage(username=username,db=db)
     fbaItem = fba.__dict__.copy()
-    storage.amazon_storage_space['Amazon'].append(fbaItem)
+    storage.amazon_storage_space['FBA'].append(fbaItem)
     new_product_on_stats(storage=storage, product=fbaItem, amz=True)
     flag_modified(storage, "amazon_storage_space")
     db.add(storage)
@@ -107,6 +116,13 @@ def add_amazon_to_storage(username:str, fba:schemas.FBAItem, db:Session):
     return fbaItem
 
 def add_nft_to_storage(username:str, nft:schemas.NFT, db:Session):
+
+    nft_storage = get_nft_storage(username=username, db=db)
+    nft_items = nft_storage['NFT']
+    for item in nft_items:
+        if item['id'] == nft.id:
+            raise HTTPException(status_code=400, detail=f'Item with ID: {nft.id} already exists in your NFT Storage')
+
     storage = get_user_storage(username=username,db=db)
     nftItem = nft.__dict__.copy()
     storage.nft_storage_space['NFT'].append(nftItem)
@@ -136,7 +152,7 @@ def get_shoe_item_by_id(username:str, shoe_id: str, db:Session):
 
 def get_amazon_item_by_asin(username:str, asin: str, db:Session):
     amazon_storage = get_amazon_storage(username=username, db=db)
-    amazon_items = amazon_storage['Amazon']
+    amazon_items = amazon_storage['FBA']
     for item in amazon_items:
         if item['asin'] == asin:
             return item
@@ -184,13 +200,19 @@ def update_shoe_item(username:str, shoe_id: str, shoe: schemas.Shoe, db:Session)
 
     raise HTTPException(status_code=404, detail=f'Shoe with id: {shoe_id} not found')
 
-def update_amazon_item(username:str, asin: str, item: schemas.FBAItem, db:Session):
+def update_amazon_item(username:str, asin: str, fba: schemas.FBAItem, db:Session):
+    amazon_storage = get_amazon_storage(username=username, db=db)
+    amazon_items = amazon_storage['FBA']
+    for item in amazon_items:
+        if item['asin'] == fba.asin:
+            raise HTTPException(status_code=400, detail=f'Item with ASIN: {fba.asin} already exists in your Amazon Storage')
+    
     storage = get_user_storage(username=username,db=db)
 
-    for it in storage.amazon_storage_space['Amazon']:
+    for it in storage.amazon_storage_space['FBA']:
         if it['asin'] == asin:
             delete_product_stats(storage=storage, old_product=it, amz=True)
-            for key,value in item.dict(exclude_unset=True).items():
+            for key,value in fba.dict(exclude_unset=True).items():
                 it[key] = value
             new_product_on_stats(storage=storage, product=it, amz=True)
             flag_modified(storage, "amazon_storage_space")
@@ -201,6 +223,14 @@ def update_amazon_item(username:str, asin: str, item: schemas.FBAItem, db:Sessio
     raise HTTPException(status_code=404, detail=f'Amazon item with asin: {asin} not found')
 
 def update_nft_item(username:str, nft_id: str, nft: schemas.NFT, db:Session):
+
+    nft_storage = get_nft_storage(username=username, db=db)
+    nft_items = nft_storage['NFT']
+    for item in nft_items:
+        if item['id'] == nft.id:
+            raise HTTPException(status_code=400, detail=f'Item with ID: {nft.id} already exists in your NFT Storage')
+
+
     storage = get_user_storage(username=username,db=db)
 
     for it in storage.nft_storage_space['NFT']:
@@ -261,17 +291,17 @@ def delete_item_by_shoeid(username: str ,shoe_id: str, deleteAllFlag: bool ,db:S
 def delete_item_by_asin(username: str ,asin: str, deleteAllFlag: bool ,db:Session):
     storage = get_user_storage(username=username, db=db)
     if deleteAllFlag:
-        storage.amazon_storage_space['Amazon'] = []
-        storage.amazon_storage_space['Stats'] = schemas.StorageBase.__dict__['__fields__']['amazon_storage_space'].default['Stats']
+        storage.amazon_storage_space['FBA'] = []
+        storage.amazon_storage_space['Stats'] = schemas.StorageBase.__dict__['__fields__']['fba_storage_space'].default['Stats']
         flag_modified(storage,'amazon_storage_space')
         db.add(storage)
         db.commit()
         return storage.amazon_storage_space
 
     get_amazon_item_by_asin(username=username, asin=asin,db=db)
-    for i,it in enumerate(storage.amazon_storage_space['Amazon']):
+    for i,it in enumerate(storage.amazon_storage_space['FBA']):
         if it['asin'] == asin:
-            storage.amazon_storage_space['Amazon'].pop(i)
+            storage.amazon_storage_space['FBA'].pop(i)
             delete_product_stats(storage=storage, old_product=it,amz=True)
             flag_modified(storage,"amazon_storage_space")
             db.add(storage)

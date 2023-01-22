@@ -56,6 +56,7 @@ class FBAItem(BaseModel):
     dimensions:Optional[str]
     weight:Optional[float]
     retail:Optional[confloat(gt=0)]
+    resell:Optional[confloat(ge=0)]
     quantity:Optional[conint(gt=0)]
     category:Optional[str]
     status:Optional[Literal['NOT LISTED', 'LISTED', 'PACKED', 'SHIPPED']]

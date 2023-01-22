@@ -81,7 +81,7 @@ def Update_NFT_Storage_Item(
 def Delete_NFT_Storage_Item(
     request:Request,
     username:str,
-    id:str,
+    id:Union[str,None] = None,
     deleteAll:bool = False, 
     currUser:schemas.User = Depends(auth.current_user),
     db: Session = Depends(interact_db)):
