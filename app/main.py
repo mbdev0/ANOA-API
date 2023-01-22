@@ -2,7 +2,7 @@ from models import object_models
 from configuration.dbconfig import engine, interact_db
 from schemas import schemas
 from auth import auth, authconfig
-from routers import flipsstorage, shoestorage, users
+from routers import flipsstorage, shoestorage, users, nftstorage, fbastorage
 from configuration.limiter import *
 
 from datetime import timedelta
@@ -17,6 +17,8 @@ object_models.Base.metadata.create_all(bind=engine)
 app.include_router(flipsstorage.router)
 app.include_router(shoestorage.router)
 app.include_router(users.router)
+app.include_router(nftstorage.router)
+app.include_router(fbastorage.router)
 
 @app.get("/")
 @limiter.limit("30/minute")

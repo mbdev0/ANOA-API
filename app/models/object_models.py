@@ -20,3 +20,5 @@ class Storage(Base):
     userid = Column(String, ForeignKey("users.userid"))
     shoe_storage_space = Column(JSON)
     flips_storage_space = Column(JSON)
+    amazon_storage_space = Column(JSON)
+    nft_storage_space = Column(JSON)
